@@ -1,3 +1,5 @@
+import processing.serial.*;
+Serial puerto;
 float thermometerHeight = 180; // Altura total del termómetro
 float mercuryHeight; // Altura del mercurio
 float fixedTemperature = 13; // Temperatura fija en grados Celsius
@@ -16,6 +18,11 @@ void setup() {
   size(800, 600);
   mercuryHeight = map(fixedTemperature, 0, 35, 0, thermometerHeight);
   sunRadius = map(sunlightIntensity, 0, 1, minSunRadius, maxSunRadius);
+  println(Serial.list()[0]);
+  
+  puerto = new Serial(this, Serial.list()[0], 9600);
+  
+  puerto.bufferUntil('\n') ;
   
 }
 
@@ -105,6 +112,13 @@ void draw() {
   fill(255);
   textAlign(CENTER, CENTER);
   text("Datos Históricos", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+}
+
+void serialEvent(Serial puerto){
+  String dato= puerto.readStringUntil('\n');
+  if(dato != null){
+    print(dato);
+  }
 }
 
 void drawCloud(float x, float y, float size) {
