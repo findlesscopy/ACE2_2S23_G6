@@ -1,7 +1,8 @@
-CREATE TABLE MedicionesAmbiente (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS mediciones (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     temperatura DECIMAL(5, 2) NOT NULL,
-    luz INT NOT NULL,
+    luz INTEGER NOT NULL,
     humedad DECIMAL(5, 2) NOT NULL,
-    calidad_aire INT NOT NULL
+    calidad_aire INTEGER NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
