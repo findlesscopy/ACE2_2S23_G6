@@ -1,5 +1,5 @@
-import processing.serial.*;
-Serial puerto;
+//import processing.serial.*;
+//Serial puerto;
 float thermometerHeight = 180; // Altura total del termómetro
 float mercuryHeight; // Altura del mercurio
 float fixedTemperature = 13; // Temperatura fija en grados Celsius
@@ -14,16 +14,29 @@ float airQuality = 0.79; // Calidad del aire (0.0 a 1.0)
 
 float humedad = 0;
 
+//boton
+  PApplet newWindow;
+  int buttonWidth = 150;
+  int buttonHeight = 30;
+  int buttonX = 325;
+  int buttonY = height + 460;
+  boolean btn_pressed = false;
+
+  //data historica
+int[] data = {50, 80, 120}; // Datos de las barras
+float barWidth; // Ancho de cada barra
+int maxValue; // Valor máximo en los datos
+
 void setup() {
   size(800, 600);
   mercuryHeight = map(fixedTemperature, 0, 35, 0, thermometerHeight);
   sunRadius = map(sunlightIntensity, 0, 1, minSunRadius, maxSunRadius);
-  println(Serial.list()[0]);
+  //println(Serial.list()[0]);
   
-  puerto = new Serial(this, Serial.list()[0], 9600);
+  //puerto = new Serial(this, Serial.list()[0], 9600);
   
-  puerto.bufferUntil('\n') ;
-  
+  //puerto.bufferUntil('\n') ;
+  newWindow = new SecondApplet();
 }
 
 void draw() {
@@ -103,23 +116,20 @@ void draw() {
   fill(0);
   text("Estación meteorológica IOT", width / 2, height - 50);
 
-  int buttonWidth = 150;
-  int buttonHeight = 30;
-  int buttonX = width / 2 - buttonWidth / 2;
-  int buttonY = height - 40;
+  
   fill(100);
   rect(buttonX, buttonY, buttonWidth, buttonHeight);
   fill(255);
   textAlign(CENTER, CENTER);
   text("Datos Históricos", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 }
-
+/*
 void serialEvent(Serial puerto){
   String dato= puerto.readStringUntil('\n');
   if(dato != null){
     print(dato);
   }
-}
+}*/
 
 void drawCloud(float x, float y, float size) {
   noStroke(); // Sin borde
@@ -186,4 +196,76 @@ void drawDrop(float x, float y, float width, float height) {
                x - width * 0.3, y + height * 0.3,
                x, y - height * 0.5);
   endShape(CLOSE);
+}
+
+void mousePressed() {
+  // Verificar si el clic está dentro de los límites del botón
+  if (mouseX > buttonX && mouseX < buttonX + buttonWidth && mouseY > buttonY && mouseY < buttonY + buttonHeight) {
+      //newWindow = new SecondApplet(); // Marcar que se ha hecho clic en el botón
+      String[] args = {"TwoFrameTest"};
+      SecondApplet sa = new SecondApplet();
+      PApplet.runSketch(args, sa);
+  }
+}
+
+
+// Clase para la nueva ventana
+public class SecondApplet extends PApplet {
+
+  public void settings() {
+    size(800, 600);
+  }
+
+  public void draw() {
+    background(255);
+    fill(0);
+    ellipse(100, 50, 10, 10);
+    
+    float boxWidth = width / 2.0;
+    float boxHeight = (height / 2.0);
+    
+    barWidth = boxWidth / data.length;
+    maxValue = max(data);
+  
+    fill(255);
+    rect(0, 0, boxWidth, boxHeight);
+    
+    fill(255);
+    rect(0, 0, boxWidth, boxHeight);
+    drawBarChart(data,"Histórico de Temperatura", 0, 0, boxWidth, boxHeight);
+    
+    fill(255);
+    rect(boxWidth, 0, boxWidth, boxHeight);
+    drawBarChart(data, "Histórico de Cantidad de Luz", boxWidth, 0 , boxWidth, boxHeight);
+    
+    fill(255);
+    rect(0, boxHeight, boxWidth, boxHeight);
+    drawBarChart(data, "Histórico de Calidad de Aire", 0, boxHeight , boxWidth, boxHeight);
+    
+    fill(255);
+    rect(boxWidth, boxHeight, boxWidth, boxHeight);
+    drawBarChart(data, "Historico de % Humedad", boxWidth, boxHeight , boxWidth, boxHeight);
+  }
+  
+  void drawBarChart(int[] data, String title, float x, float y, float w, float h) {
+  textAlign(CENTER);
+  textSize(16);
+  fill(0);
+  text(title, x + w / 2, y + 20);
+  
+  for (int i = 0; i < data.length; i++) {
+    float barHeight = map(data[i], 0, maxValue, 0, h - 40); // Ajuste de altura
+
+    fill(0, 150, 200);
+    rect(x + i * barWidth, y + h - barHeight, barWidth - 10, barHeight); // Ajuste de grosor
+
+    fill(0);
+    textAlign(CENTER);
+    text(data[i], x + i * barWidth + barWidth / 2, y + h - barHeight - 10);
+  }
+}
+
+
+
+
 }
