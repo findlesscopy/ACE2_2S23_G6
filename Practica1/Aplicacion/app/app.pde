@@ -3,22 +3,22 @@ import processing.data.*;
 import http.requests.*;
 
 
-//Serial puerto;
+Serial puerto;
 float thermometerHeight = 180; // Altura total del termómetro
 float mercuryHeight; // Altura del mercurio
-float fixedTemperature = 0; // Temperatura fija en grados Celsius
+float fixedTemperature = 31; // Temperatura fija en grados Celsius
 
 ArrayList<String[]> listaDeDatos = new ArrayList<String[]>();
 
-float sunlightIntensity = 0.7; // Intensidad de luz solar (0.0 a 1.0)
+float sunlightIntensity = 0.6; // Intensidad de luz solar (0.0 a 1.0)
 float minSunRadius = 30; // Radio mínimo del sol
 float maxSunRadius = 100; // Radio máximo del sol
 
 float sunRadius; // Radio actual del sol
 
-float airQuality = 0.79; // Calidad del aire (0.0 a 1.0)
+float airQuality = 0.8; // Calidad del aire (0.0 a 1.0)
 
-float humedad = 0;
+float humedad = 75;
 
 //boton
   PApplet newWindow;
@@ -42,11 +42,11 @@ void setup() {
   size(800, 600);
   mercuryHeight = map(fixedTemperature, 0, 35, 0, thermometerHeight);
   sunRadius = map(sunlightIntensity, 0, 1, minSunRadius, maxSunRadius);
-  //println(Serial.list()[0]);
+  println(Serial.list()[0]);
   
-  //puerto = new Serial(this, Serial.list()[0], 9600);
+  puerto = new Serial(this, Serial.list()[0], 9600);
   
-  //puerto.bufferUntil('\n') ;
+  puerto.bufferUntil('\n') ;
   newWindow = new SecondApplet();
 }
 
@@ -109,7 +109,11 @@ void draw() {
   ellipse(x, y-30, circleRadius * 2, circleRadius * 2);
   
   // Gota grande (en medio)
-  fill(0, 0, 255); // Color azul
+  if(humedad < 33) fill(173, 219, 230); // Color azul
+  if(humedad >= 33 && humedad <= 66 ) fill(135, 206, 235); // Color azul
+  if(humedad >66 ) fill(70, 130, 180); // Color azul
+  
+  
   drawDrop(x-50, y, dropWidthBig-50, dropHeight-50);
   drawDrop(x+50, y, dropWidthBig-50, dropHeight-50);
   drawDrop(x, y, dropWidthBig, dropHeight);
@@ -134,7 +138,7 @@ void draw() {
   textAlign(CENTER, CENTER);
   text("Datos Históricos", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 }
-/*
+
 void serialEvent(Serial puerto) {
   String dato = puerto.readStringUntil('\n');
   
@@ -175,7 +179,7 @@ void serialEvent(Serial puerto) {
     }
   }
 }
-*/
+
 void prueba(){
   GetRequest get = new GetRequest("http://localhost:5000/obtener_promedios");
       get.addHeader("Accept", "application/json");
@@ -196,7 +200,7 @@ void prueba(){
 
 
             dataTemperatura[k] = promedioTemperatura;
-            dataLux[k]  = promedioLuz * 0.1;
+            dataLux[k]  = promedioLuz / 1000;
             dataCo2[k]  = promedioCalidadAire;
             dataHumedad[k]  = promedioHumedad;
             /*
