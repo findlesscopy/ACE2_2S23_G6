@@ -1,8 +1,13 @@
-//import processing.serial.*;
-//Serial puerto;
+import processing.serial.*;
+import http.requests.*;
+
+
+Serial puerto;
 float thermometerHeight = 180; // Altura total del termómetro
 float mercuryHeight; // Altura del mercurio
-float fixedTemperature = 13; // Temperatura fija en grados Celsius
+float fixedTemperature = 0; // Temperatura fija en grados Celsius
+
+ArrayList<String[]> listaDeDatos = new ArrayList<String[]>();
 
 float sunlightIntensity = 0.7; // Intensidad de luz solar (0.0 a 1.0)
 float minSunRadius = 30; // Radio mínimo del sol
@@ -31,11 +36,11 @@ void setup() {
   size(800, 600);
   mercuryHeight = map(fixedTemperature, 0, 35, 0, thermometerHeight);
   sunRadius = map(sunlightIntensity, 0, 1, minSunRadius, maxSunRadius);
-  //println(Serial.list()[0]);
+  println(Serial.list()[0]);
   
-  //puerto = new Serial(this, Serial.list()[0], 9600);
+  puerto = new Serial(this, Serial.list()[0], 9600);
   
-  //puerto.bufferUntil('\n') ;
+  puerto.bufferUntil('\n') ;
   newWindow = new SecondApplet();
 }
 
@@ -123,13 +128,47 @@ void draw() {
   textAlign(CENTER, CENTER);
   text("Datos Históricos", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 }
-/*
-void serialEvent(Serial puerto){
-  String dato= puerto.readStringUntil('\n');
-  if(dato != null){
-    print(dato);
+
+void serialEvent(Serial puerto) {
+  String dato = puerto.readStringUntil('\n');
+  
+  if (dato != null) {
+    String[] datos = dato.split(",");
+    listaDeDatos.add(datos); // Agregamos el arreglo a la lista
+    //print("hola" + listaDeDatos.get(listaDeDatos.size() - 1)[0]);
+    
+    // Imprimimos la lista de arreglos
+    for (int i = 0; i < listaDeDatos.size(); i++) {
+      String[] arreglo = listaDeDatos.get(i);
+      fixedTemperature = Float.parseFloat(arreglo[0]);
+      airQuality = Float.parseFloat(arreglo[1]);
+      humedad = Float.parseFloat(arreglo[2])*100;
+      sunlightIntensity = Float.parseFloat(arreglo[3])/1000;
+      airQuality = Float.parseFloat(arreglo[1]);
+      
+      JSONObject json = new JSONObject();
+      json.setFloat("temperatura", fixedTemperature);
+      json.setFloat("luz", sunlightIntensity * 10000); // Escalamos la intensidad de luz
+      json.setFloat("humedad", humedad);
+      json.setFloat("calidad_aire", airQuality);
+      
+      PostRequest post = new PostRequest("http://localhost:5000/guardar_datos");
+      post.addHeader("Content-Type", "application/json");
+      post.addData(json.toString());
+      post.send();
+      
+      println("Reponse Content: " + post.getContent());
+      println("Reponse Content-Length Header: " + post.getHeader("Content-Length"));
+    
+          //sunlightIntensity = Float.parseFloat(arreglo[3])/10;
+      print("Arreglo " + (i+1) + ": ");
+      for (int j = 0; j < arreglo.length; j++) {
+        print(arreglo[j] + " ");
+      }
+      println();
+    }
   }
-}*/
+}
 
 void drawCloud(float x, float y, float size) {
   noStroke(); // Sin borde
