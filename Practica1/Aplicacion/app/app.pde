@@ -1,8 +1,9 @@
 import processing.serial.*;
+import processing.data.*;
 import http.requests.*;
 
 
-Serial puerto;
+//Serial puerto;
 float thermometerHeight = 180; // Altura total del termómetro
 float mercuryHeight; // Altura del mercurio
 float fixedTemperature = 0; // Temperatura fija en grados Celsius
@@ -29,6 +30,11 @@ float humedad = 0;
 
   //data historica
 int[] data = {50, 80, 120}; // Datos de las barras
+float[] dataTemperatura = new float[3];
+float[] dataLux  = new float[3];
+float[] dataCo2  = new float[3];
+float[] dataHumedad  = new float[3];
+
 float barWidth; // Ancho de cada barra
 int maxValue; // Valor máximo en los datos
 
@@ -36,17 +42,17 @@ void setup() {
   size(800, 600);
   mercuryHeight = map(fixedTemperature, 0, 35, 0, thermometerHeight);
   sunRadius = map(sunlightIntensity, 0, 1, minSunRadius, maxSunRadius);
-  println(Serial.list()[0]);
+  //println(Serial.list()[0]);
   
-  puerto = new Serial(this, Serial.list()[0], 9600);
+  //puerto = new Serial(this, Serial.list()[0], 9600);
   
-  puerto.bufferUntil('\n') ;
+  //puerto.bufferUntil('\n') ;
   newWindow = new SecondApplet();
 }
 
 void draw() {
   background(255); // Fondo blanco
-
+  prueba();
   // Tamaño de cada recuadro
   float boxWidth = width / 2.0;
   float boxHeight = (height / 2.0) - 60;
@@ -128,7 +134,7 @@ void draw() {
   textAlign(CENTER, CENTER);
   text("Datos Históricos", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
 }
-
+/*
 void serialEvent(Serial puerto) {
   String dato = puerto.readStringUntil('\n');
   
@@ -168,6 +174,41 @@ void serialEvent(Serial puerto) {
       println();
     }
   }
+}
+*/
+void prueba(){
+  GetRequest get = new GetRequest("http://localhost:5000/obtener_promedios");
+      get.addHeader("Accept", "application/json");
+      get.send();
+      
+      String jsonString = get.getContent();
+      
+      if(jsonString != null){
+          JSONArray data = JSONArray.parse(jsonString);
+          
+          for (int k = 0; k < data.size(); k++) {
+            JSONObject entry = data.getJSONObject(k);
+            //String fecha = entry.getString("fecha");
+            float promedioCalidadAire = entry.getFloat("promedio_calidad_aire");
+            float promedioHumedad = entry.getFloat("promedio_humedad");
+            float promedioLuz = entry.getFloat("promedio_luz");
+            float promedioTemperatura = entry.getFloat("promedio_temperatura");
+
+
+            dataTemperatura[k] = promedioTemperatura;
+            dataLux[k]  = promedioLuz * 0.1;
+            dataCo2[k]  = promedioCalidadAire;
+            dataHumedad[k]  = promedioHumedad;
+            /*
+            // Aquí puedes guardar los valores en variables o hacer lo que necesites con ellos
+            println("Fecha: " + fecha);
+            println("Promedio Calidad Aire: " + promedioCalidadAire);
+            println("Promedio Humedad: " + promedioHumedad);
+            println("Promedio Luz: " + promedioLuz);
+            println("Promedio Temperatura: " + promedioTemperatura);
+            println("---------");*/
+          }
+      }
 }
 
 void drawCloud(float x, float y, float size) {
@@ -238,6 +279,7 @@ void drawDrop(float x, float y, float width, float height) {
 }
 
 void mousePressed() {
+  prueba();
   // Verificar si el clic está dentro de los límites del botón
   if (mouseX > buttonX && mouseX < buttonX + buttonWidth && mouseY > buttonY && mouseY < buttonY + buttonHeight) {
       //newWindow = new SecondApplet(); // Marcar que se ha hecho clic en el botón
@@ -271,22 +313,22 @@ public class SecondApplet extends PApplet {
     
     fill(255);
     rect(0, 0, boxWidth, boxHeight);
-    drawBarChart(data,"Histórico de Temperatura", 0, 0, boxWidth, boxHeight);
+    drawBarChart(dataTemperatura,"Histórico de Temperatura", 0, 0, boxWidth, boxHeight);
     
     fill(255);
     rect(boxWidth, 0, boxWidth, boxHeight);
-    drawBarChart(data, "Histórico de Cantidad de Luz", boxWidth, 0 , boxWidth, boxHeight);
+    drawBarChart(dataLux, "Histórico de Cantidad de Luz", boxWidth, 0 , boxWidth, boxHeight);
     
     fill(255);
     rect(0, boxHeight, boxWidth, boxHeight);
-    drawBarChart(data, "Histórico de Calidad de Aire", 0, boxHeight , boxWidth, boxHeight);
+    drawBarChart(dataCo2, "Histórico de Calidad de Aire", 0, boxHeight , boxWidth, boxHeight);
     
     fill(255);
     rect(boxWidth, boxHeight, boxWidth, boxHeight);
-    drawBarChart(data, "Historico de % Humedad", boxWidth, boxHeight , boxWidth, boxHeight);
+    drawBarChart(dataHumedad, "Historico de % Humedad", boxWidth, boxHeight , boxWidth, boxHeight);
   }
   
-  void drawBarChart(int[] data, String title, float x, float y, float w, float h) {
+  void drawBarChart(float[] data, String title, float x, float y, float w, float h) {
   textAlign(CENTER);
   textSize(16);
   fill(0);
