@@ -15,7 +15,7 @@ const char* server = "api.ejemplo.com";  // Dirección de la API
 const int port = 80;                     // Puerto HTTP (generalmente 80)
 
 float temperatura, co2, proximidad;
-int luz;
+int luz, notificacion;
 bool presencia;
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -47,6 +47,10 @@ void loop() {
   // Leer valor del sensor LDR
   luz = analogRead(LDR_PIN);
 
+  // TODO: Leer valor del sensor de proximidad
+
+
+  
   // Enviar datos a la API
   enviarDatos();
 
@@ -66,7 +70,8 @@ void sistemaVentilacion(){
     delay(30000);
 
     // enviar notificacion de calidad del aire mala a app
-
+    notificacion = 0;
+    enviarNotificacion();
 
     // iniciar un temporizador de 30 segundos
     delay(30000);
@@ -75,9 +80,9 @@ void sistemaVentilacion(){
 
     
     // enviar notificacion de calidad del aire buena a app
+    notificacion = 1;
+    enviarNotificacion();
 
-  }else{
-    // apagar ventilador
   }
 }
 
@@ -87,13 +92,16 @@ void sistemaIluminacion(){
     delay(30000);
 
     // enviar notificacion de que no hay nadie a la app
-
+    notificacion = 2;
+    enviarNotificacion();
     // inicia un temporizador de 30 segundos
     delay(30000);
 
     // apagar luces
 
     // enviar notificacion de que se ha apagado la luz en la habitación
+    notificacion = 3;
+    enviarNotificacion();
   }
 }
 
@@ -140,4 +148,49 @@ void enviarDatos(){
     client.stop();
   }
 
+}
+
+void enviarNotificacion(){
+
+  if (WiFi.status() == WL_CONNECTED) {
+    // Crear un objeto WiFiClient para la comunicación
+    WiFiClient client;
+
+    // Conectar al servidor
+    if (client.connect(server, port)) {
+      Serial.println("Conectado al servidor");
+
+      DynamicJsonDocument jsonBuffer(1024);
+
+      jsonDocument["notificacion"] = notificacion; 
+      // 0 = calidad del aire mala
+      // 1 = calidad del aire es buena
+      // 2 = no hay nadie en la habitación
+      // 3 = se ha apagado la luz en la habitación
+
+      // Serializar el objeto JSON a una cadena
+      String jsonData;
+      serializeJson(jsonDocument, jsonData);
+
+      // Realizar una solicitud POST a la API con JSON
+      client.println("POST /enviar_notificacion HTTP/1.1");
+      client.println("Host: " + String(server));
+      client.println("Content-Type: application/json");
+      client.println("Content-Length: " + String(jsonData.length()));
+      client.println();
+      client.println(jsonData);
+
+      delay(500);
+
+      // Leer y mostrar la respuesta del servidor
+      while (client.available()) {
+        String line = client.readStringUntil('\r');
+        Serial.print(line);
+      }
+    } else {
+      Serial.println("Error al conectar al servidor");
+    }
+
+    client.stop();
+  }
 }

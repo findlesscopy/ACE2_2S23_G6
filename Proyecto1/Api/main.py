@@ -11,9 +11,9 @@ def guardar_datos():
         data = request.json
 
         temperatura = data['temperatura']
-        luz = data['luz']
-        humedad = data['humedad']
-        calidad_aire = data['calidad_aire']
+        luz = data['co2']
+        humedad = data['luz']
+        calidad_aire = data['proximidad']
 
         # Conexión a la base de datos SQLite
         conn = sqlite3.connect('datos.db')
@@ -42,6 +42,29 @@ def guardar_datos():
 
         return jsonify({"mensaje": "Datos almacenados correctamente"}), 201
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/notificacion', methods=['POST'])
+def notificacion():
+    try:
+        data = request.json
+
+        response = data['notificacion']
+
+        if response == 0:
+            # enviar la notificación al usuario de que el nivel de CO2 es inadecuado
+            return jsonify({"mensaje": "Notificación de calidad del aire es mala enviada correctamente"}), 201
+        if response == 1:
+            # enviar la notificación al usuario de que el nivel de CO2 es adecuado
+            return jsonify({"mensaje": "Notificación de calidad del aire es buena enviada correctamente"}), 201
+        if response == 2:
+            # enviar la notificación al usuario de que no hay nadie en la habitación y se apagarán las luces
+            return jsonify({"mensaje": "Notificación de presencia en habitación enviada correctamente"}), 201
+        if response == 3:
+            # enviar la notificación al usuario de que se han apagado las luces en la habitación
+            return jsonify({"mensaje": "Notificación de luces apagadas enviada correctamente"}), 201
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
