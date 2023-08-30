@@ -11,8 +11,8 @@
 
 const char* ssid = "Tu_SSID";            // Nombre de tu red WiFi
 const char* password = "Tu_Contraseña";  // Contraseña de tu red WiFi
-const char* server = "api.ejemplo.com";  // Dirección de la API
-const int port = 80;                     // Puerto HTTP (generalmente 80)
+const char* server = "http://127.0.0.1";  // Dirección de la API
+const int port = 5000;                     // Puerto HTTP (generalmente 80)
 
 float temperatura, co2, proximidad;
 int luz, notificacion;
@@ -50,7 +50,7 @@ void loop() {
   // TODO: Leer valor del sensor de proximidad
 
 
-  
+
   // Enviar datos a la API
   enviarDatos();
 
@@ -117,9 +117,9 @@ void enviarDatos(){
 
       DynamicJsonDocument jsonBuffer(1024);
 
-      jsonDocument["temperatura"] = tempC;
-      jsonDocument["co2"] = ppm;
-      jsonDocument["luz"] = ldrValue;
+      jsonDocument["temperatura"] = temperatura;
+      jsonDocument["co2"] = co2;
+      jsonDocument["luz"] = luz;
       jsonDocument["proximidad"] = 0;
 
       // Serializar el objeto JSON a una cadena
@@ -173,7 +173,7 @@ void enviarNotificacion(){
       serializeJson(jsonDocument, jsonData);
 
       // Realizar una solicitud POST a la API con JSON
-      client.println("POST /enviar_notificacion HTTP/1.1");
+      client.println("POST /notificacion HTTP/1.1");
       client.println("Host: " + String(server));
       client.println("Content-Type: application/json");
       client.println("Content-Length: " + String(jsonData.length()));
