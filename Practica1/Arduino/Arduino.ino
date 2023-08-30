@@ -19,8 +19,7 @@ void loop() {
 
   // Leer temperatura y humedad del sensor DHT11
   float tempC = dht.readTemperature();
-  float humidity = dht.readHumidity();
-
+  
   // Leer concentración de CO2 del sensor MQ-135
   float ppm = gasSensor.getPPM();
 
