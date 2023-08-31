@@ -45,6 +45,8 @@ def guardar_datos():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+
+
 @app.route('/notificacion', methods=['POST'])
 def notificacion():
     try:
@@ -54,16 +56,16 @@ def notificacion():
 
         if response == 0:
             # enviar la notificación al usuario de que el nivel de CO2 es inadecuado
-            return jsonify({"mensaje": "Notificación de calidad del aire es mala enviada correctamente"}), 201
+            return "Notificación de calidad del aire es mala"
         if response == 1:
             # enviar la notificación al usuario de que el nivel de CO2 es adecuado
-            return jsonify({"mensaje": "Notificación de calidad del aire es buena enviada correctamente"}), 201
+            return "Notificación de calidad del aire es buena enviada correctamente"
         if response == 2:
             # enviar la notificación al usuario de que no hay nadie en la habitación y se apagarán las luces
-            return jsonify({"mensaje": "Notificación de presencia en habitación enviada correctamente"}), 201
+            return "Notificación de presencia en habitación enviada correctamente"
         if response == 3:
             # enviar la notificación al usuario de que se han apagado las luces en la habitación
-            return jsonify({"mensaje": "Notificación de luces apagadas enviada correctamente"}), 201
+            return "Notificación de luces apagadas enviada correctamente"
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400

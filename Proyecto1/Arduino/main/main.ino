@@ -122,9 +122,7 @@ void enviarDatos(){
       jsonDocument["luz"] = luz;
       jsonDocument["proximidad"] = 0;
 
-      // Serializar el objeto JSON a una cadena
-      String jsonData;
-      serializeJson(jsonDocument, jsonData);
+
 
       // Realizar una solicitud POST a la API con JSON
       client.println("POST /guardar_datos HTTP/1.1");
