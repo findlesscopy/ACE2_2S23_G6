@@ -8,7 +8,7 @@
 | Roberto Carlos Gómez Donis   | 202000544 |
 | Edgardo Andrés Nil Guzmán    | 20180119  |
 | César André Ramírez Dávila   | 202010816 |
-| Ángel Francisco Sique Santos | 202012039 |
+| Angel Francisco Sique Santos | 202012039 |
 
 ---
 

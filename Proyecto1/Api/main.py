@@ -68,45 +68,10 @@ def notificacion():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/hola', methods=['GET'])
+def hola():
+    return jsonify({"mensaje": "Hola mundo"}), 200
 
-@app.route('/obtener_promedios', methods=['GET'])
-def obtener_promedios():
-    try:
-        # Conexión a la base de datos SQLite
-        conn = sqlite3.connect('datos.db')
-        cursor = conn.cursor()
-
-        # Obtener promedios de datos agrupados por fecha
-        cursor.execute('''
-            SELECT DATE(fecha),
-                   AVG(temperatura),
-                   AVG(luz),
-                   AVG(humedad),
-                   AVG(calidad_aire)
-            FROM mediciones
-            GROUP BY DATE(fecha)
-        ''')
-
-        datos_promedio = cursor.fetchall()
-
-        conn.close()
-
-        # Crear una lista de diccionarios para el resultado
-        resultados = []
-        for dato in datos_promedio:
-            resultado = {
-                "fecha": dato[0],
-                "promedio_temperatura": dato[1],
-                "promedio_luz": dato[2],
-                "promedio_humedad": dato[3],
-                "promedio_calidad_aire": dato[4]
-            }
-            resultados.append(resultado)
-
-        return jsonify(resultados), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
