@@ -18,6 +18,9 @@ float temperatura, co2, proximidad;
 int luz, notificacion;
 bool presencia;
 
+int estadoLuz, estadoTemperatura; // 0 = apagada, 1 = encendida
+int velocidadVentilador; // 0 = baja , 1 = alta
+
 DHT dht(DHTPIN, DHTTYPE);
 MQ135 gasSensor = MQ135(ANALOG_PIN);
 
@@ -38,7 +41,7 @@ void setup() {
 
 void loop() {
 
-   // Leer temperatura
+  // Leer temperatura
   temperatura = dht.readTemperature();
   
   // Leer concentración de CO2 del sensor MQ-135
@@ -49,10 +52,14 @@ void loop() {
 
   // TODO: Leer valor del sensor de proximidad
 
-
+  // Analiza todos los datos que recibe de la APP (Luz y Temperatura)
+  gestorReceptor();
 
   // Enviar datos a la API
-  enviarDatos();
+  enviarDatosAPI();
+
+  // Enviar datos a la BD
+  enviarDatosBD();
 
   // verificar si la calidad del aire es buena
   sistemaVentilacion();
@@ -61,7 +68,7 @@ void loop() {
   sistemaIluminacion();
 
   
-  delay(60000); // Esperar un minuto antes de enviar otra solicitud
+  delay(10000); // Esperar un minuto antes de enviar otra solicitud
 }
 
 void sistemaVentilacion(){
@@ -106,7 +113,6 @@ void sistemaIluminacion(){
 }
 
 void enviarDatos(){
-
   if (WiFi.status() == WL_CONNECTED) {
     // Crear un objeto WiFiClient para la comunicación
     WiFiClient client;
@@ -121,8 +127,6 @@ void enviarDatos(){
       jsonDocument["co2"] = co2;
       jsonDocument["luz"] = luz;
       jsonDocument["proximidad"] = 0;
-
-
 
       // Realizar una solicitud POST a la API con JSON
       client.println("POST /guardar_datos HTTP/1.1");
@@ -145,7 +149,6 @@ void enviarDatos(){
 
     client.stop();
   }
-
 }
 
 void enviarNotificacion(){
@@ -191,4 +194,197 @@ void enviarNotificacion(){
 
     client.stop();
   }
+}
+
+int enviarDatosAPI(){
+  if (WiFi.status() == WL_CONNECTED) {
+    // Crear un objeto WiFiClient para la comunicación
+    WiFiClient client;
+
+    // Conectar al servidor
+    if (client.connect(server, port)) {
+      Serial.println("Conectado al servidor");
+
+      DynamicJsonDocument jsonBuffer(1024);
+
+      jsonDocument["temperatura"] = temperatura;
+      jsonDocument["co2"] = co2;
+      jsonDocument["luz"] = luz;
+      jsonDocument["proximidad"] = 0;
+
+      // Realizar una solicitud POST a la API con JSON
+      client.println("POST /guardar_datos HTTP/1.1");
+      client.println("Host: " + String(server));
+      client.println("Content-Type: application/json");
+      client.println("Content-Length: " + String(jsonData.length()));
+      client.println();
+      client.println(jsonData);
+
+      delay(500);
+
+      // Leer y mostrar la respuesta del servidor
+      while (client.available()) {
+        String line = client.readStringUntil('\r');
+        Serial.print(line);
+      }
+    } else {
+      Serial.println("Error al conectar al servidor");
+    }
+
+    client.stop();
+  }
+}
+
+void recibirDatosSistemaLuz(){
+  if(WiFi.staus == WL_CONNECTED){
+
+    WiFiClient client;
+
+    if(client.connect(server, port)){
+      Serial.println("Conectado al servidor");
+
+      client.println("GET /enviar_estado_luz HTTP/1.1");  // Reemplaza /ruta_de_tu_recurso con la ruta real
+      client.println("Host: " + String(host));
+      client.println("Connection: close");
+      client.println();
+
+      String respuestaJson = "";
+
+      while (client.connected()) {
+        if(client.available()){
+          char c = client.read();
+          respuestaJson += c;
+        }
+      }
+
+      client.stop();
+      Serial.println("Conexión cerrada");
+
+      DynamicJsonDocument jsonBuffer(1024);
+      DeserializationError error = deserializeJson(jsonBuffer, respuestaJson);
+
+      if(error){
+        Serial.println("Error al analizar el JSON");
+        Serial.println(error.c_str());
+        return;
+      } else {
+        estadoLuz = jsonBuffer["estado_luz"];
+        Serial.println("Estado de la luz: " + estadoLuz);
+      }
+    } else {
+      Serial.println("Error al conectar al servidor");
+    }
+  }
+  return estadoLuz;
+}
+
+int recibirDatosSistemaVentilacion(){
+  if(WiFi.staus == WL_CONNECTED){
+
+    WiFiClient client;
+
+    if(client.connect(server, port)){
+      Serial.println("Conectado al servidor");
+
+      client.println("GET /enviar_estado_temperatura HTTP/1.1");  // Reemplaza /ruta_de_tu_recurso con la ruta real
+      client.println("Host: " + String(host));
+      client.println("Connection: close");
+      client.println();
+
+      String respuestaJson = "";
+
+      while (client.connected()) {
+        if(client.available()){
+          char c = client.read();
+          respuestaJson += c;
+        }
+      }
+
+      client.stop();
+      Serial.println("Conexión cerrada");
+
+      DynamicJsonDocument jsonBuffer(1024);
+      DeserializationError error = deserializeJson(jsonBuffer, respuestaJson);
+
+      if(error){
+        Serial.println("Error al analizar el JSON");
+        Serial.println(error.c_str());
+        return;
+      } else {
+        estadoTemperatura = jsonBuffer["estado_temperatura"];
+        Serial.println("Estado de la temperatura: " + estadoTemperatura);
+      }
+    } else {
+      Serial.println("Error al conectar al servidor");
+    }
+  }
+  return estadoTemperatura;
+}
+
+int recibirVelocidadVentilador(){
+  if(WiFi.staus == WL_CONNECTED){
+
+    WiFiClient client;
+
+    if(client.connect(server, port)){
+      Serial.println("Conectado al servidor");
+
+      client.println("GET /enviar_velocidad_ventilador HTTP/1.1");  // Reemplaza /ruta_de_tu_recurso con la ruta real
+      client.println("Host: " + String(host));
+      client.println("Connection: close");
+      client.println();
+
+      String respuestaJson = "";
+
+      while (client.connected()) {
+        if(client.available()){
+          char c = client.read();
+          respuestaJson += c;
+        }
+      }
+
+      client.stop();
+      Serial.println("Conexión cerrada");
+
+      DynamicJsonDocument jsonBuffer(1024);
+      DeserializationError error = deserializeJson(jsonBuffer, respuestaJson);
+
+      if(error){
+        Serial.println("Error al analizar el JSON");
+        Serial.println(error.c_str());
+        return;
+      } else {
+        velocidadVentilador = jsonBuffer["velocidad_ventilador"];
+        Serial.println("Velocidad de ventilador: " + velocidadVentilador);
+      }
+    } else {
+      Serial.println("Error al conectar al servidor");
+    }
+  }
+  return velocidadVentilador;
+}
+
+void gestorReceptor(){
+
+  if(recibirDatosSistemaLuz()) == 1{
+    // encender luz
+    //TODO: realizar codigo de encender luz
+    estadoLuz = 1;
+  } else if(recibirDatosSistemaLuz() == 0){
+    // apagar luz
+    //TODO: realizar codigo de apagar luz
+    estadoLuz = 0;
+  }
+
+  if(recibirDatosSistemaVentilacion() == 1){
+    // encender ventilador
+    if(recibirVelocidadVentilador() == 1){
+      // velocidad alta
+      // TODO: realizar codigo de encender ventilador en velocidad alta
+    } else if(recibirVelocidadVentilador() == 0){
+      // velocidad baja
+      // TODO: realizar codigo de encender ventilador en velocidad baja
+    }
+  }
+
 }
