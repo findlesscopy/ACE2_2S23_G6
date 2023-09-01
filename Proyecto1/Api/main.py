@@ -100,9 +100,7 @@ def estado_luz():
 def notificacion():
     try:
         data = request.json
-
         response = data['notificacion']
-
         if response == 0:
             # enviar la notificación al usuario de que el nivel de CO2 es inadecuado
             return "Notificación de calidad del aire es mala"
@@ -124,5 +122,6 @@ def hola():
     return jsonify({"luz_actual" : luz_actual,"co2_actual": co2_actual,"temperatura_actual": temperatura_actual }), 200
 
 
+#host = "0.0.0.0"
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
