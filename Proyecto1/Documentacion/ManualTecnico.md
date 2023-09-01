@@ -38,9 +38,55 @@ Además, el sistema se preocupa por la calidad del aire, monitoreando de cerca s
 
 ### Boceto Prototipo
 
+<p> Propuesta del Prototipo </p>
+
+![Prototipo](IMG/prototipo.jpg)
+
+<p>Figura 1. Boceto</p>
+
+![Diagrama](IMG/diagrama.jpg)
+
+<p>Figura 2. Diagrama del funcionamiento del prototipo</p>
+
 ### Construcción Prototipo
 
+<p> Imágenes del armado del prototipo</p>
+
+![PrimeraArmado](IMG/armado1.jpeg)
+
+<p>Figura 3. Arduino</p>
+
+![SegundaArmado](IMG/armado2.jpeg)
+
+<p>Figura 4. Conexiones de sensores con Arduino</p>
+
+![TerceraArmado](IMG/armado3.jpeg)
+
+<p>Figura 5. Conexión módulo Wi-Fi</p>
+
 ### Aplicación Móvil
+
+<p> Capturas de pantalla de la interfaz</p>
+
+![CapturaUno](IMG/cap1.jpeg)
+
+<p>Figura 6. Pantalla de inicio</p>
+
+![CapturaDos](IMG/cap2.jpeg)
+
+<p>Figura 7. Sensor de temperatura</p>
+
+![CapturaTres](IMG/cap3.jpeg)
+
+<p>Figura 8. Datos en tiempo real</p>
+
+![CapturaCuatro](IMG/cap4.jpeg)
+
+<p>Figura 9. Historial de Notificaciones</p>
+
+![CapturaCinco](IMG/cap5.jpeg)
+
+<p>Figura 10. Sensor Lumínco</p>
 
 ### Framework IOT
 
