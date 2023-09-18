@@ -181,3 +181,16 @@ Estos mockups representan visualmente las diversas funcionalidades de la aplicac
 # Diagramas de flujo
 
 # MQTT
+### ¿Qué es?
+MQTT es un protocolo de mensajería basado en estándares, o un conjunto de reglas, que se utiliza para la comunicación de un equipo a otro. Los sensores inteligentes, los dispositivos portátiles y otros dispositivos de Internet de las cosas (IoT) generalmente tienen que transmitir y recibir datos a través de una red con recursos restringidos y un ancho de banda limitado. Estos dispositivos IoT utilizan MQTT para la transmisión de datos, ya que resulta fácil de implementar y puede comunicar datos IoT de manera eficiente. MQTT admite la mensajería entre dispositivos a la nube y la nube al dispositivo.
+
+El protocolo MQTT funciona según los principios del modelo de publicación o suscripción. En la comunicación de red tradicional, los clientes y servidores se comunican directamente entre sí. Los clientes solicitan recursos o datos del servidor, a continuación el servidor procesa y envía una respuesta. Sin embargo, MQTT utiliza un patrón de publicación o suscripción para desacoplar el remitente del mensaje (*publisher*) del receptor del mensaje (*subscriber*). En lugar de ello, un tercer componente, denominado *broker*, controla la comunicación entre editores y suscriptores. El trabajo del *broker* consiste en filtrar todos los mensajes entrantes de los editores y distribuirlos correctamente a los suscriptores. 
+### Broker
+El *broker* es un servidor que proporciona un punto de encuentro para los dispositivos y aplicaciones que desean comunicarse entre sí. Es responsable de recibir los mensajes publicados por los *publishers* y distribuirlos a los *subscribers* que se han suscrito a los temas correspondientes.
+### Tipos de Broker
+* **Broker gratuitos:** Estos *brokers* son ofrecidos por empresas o organizaciones sin ánimo de lucro. Son una buena opción para aplicaciones de prueba o desarrollo. Algunos ejemplos de *brokers* gratuitos son Mosquitto, HiveMQ y Eclipse Paho.
+* **Broker de pago:** Estos *brokers* ofrecen una serie de funciones y características adicionales, como seguridad, escalabilidad y soporte técnico. Algunos ejemplos de *brokers* de pago son AWS IoT Core, IBM Watson IoT Platform y Azure IoT Hub.
+### Publisher
+Un *publisher* es un dispositivo o aplicación que publica mensajes en un tema. Los mensajes publicados pueden ser de cualquier tipo, como datos sensor, eventos o comandos.
+### Subscriber
+Un *subscriber* es un dispositivo o aplicación que se suscribe a un tema para recibir los mensajes que se publican en él. Los *subscribers* pueden recibir mensajes de cualquier *publisher* que publique en el tema.
