@@ -197,6 +197,16 @@ Estos mockups representan visualmente las diversas funcionalidades de la aplicac
 <li>La aplicación web ofrece una interfaz para la visualización de datos en tiempo real, incluyendo gráficos de temperatura, presencia humana, estado de iluminación y calidad del aire, todo implementado a través de software como Grafana. Además, permite el control de la iluminación dentro de la habitación.</li>
 
 # Diagramas de flujo
+Sistema de Monitoreo Ambiental Integrado. Este prototipo de Sistema de Monitoreo Ambiental Integrado combina la tecnología de Arduino con una aplicación móvil y una página web para proporcionar a los usuarios una forma efectiva de monitorear y controlar su entorno ambiental. Este sistema tiene un gran potencial en una variedad de aplicaciones y puede mejorar la calidad de vida y la eficiencia en diferentes entornos.
+### Prototipo
+<p align="center">
+  <img src="./Diagramas/Flujo%Prototipo.png" alt="Prototipo" width="400">
+</p>
+
+### Diagrama
+<p align="center">
+  <img src="./Diagramas/Diagrama%de%Flujo.png" alt="Diagrama de Flujo" width="400">
+</p>
 
 # MQTT
 ### ¿Qué es?
