@@ -114,7 +114,7 @@ Estos mockups representan visualmente las diversas funcionalidades de la aplicac
 
 ##### MQ135 (Sensor de Calidad del Aire):
 
-<li> Este sensor es parte de la capa de "Hardware", ya que es un componente físico que recopila datos sobre la calidad del aire en la habitación, detectando sustancias como CO2 y otros gases nocivos.</li>
+<li> Este sensor es un componente físico que recopila datos sobre la calidad del aire en la habitación, detectando sustancias como CO2 y otros gases nocivos.</li>
 
 ##### DHT11 (Sensor de Temperatura):
 
