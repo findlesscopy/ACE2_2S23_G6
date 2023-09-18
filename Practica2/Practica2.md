@@ -34,7 +34,25 @@
 
 # Bocetos de prototipos
 
+<p align="center">
+  <img src="./Prototipo/prototipo2.png" alt="Boceto de prototipo" >
+</p>
+
 # Prototipo propuesto
+### Vista del prototipo desde arriba.
+<p align="center">
+  <img src="./Prototipo/Arriba.jpg" alt="Prototipo desde arriba" width="400">
+</p>
+
+### Vista del prototipo hacia adentro.
+<p align="center">
+  <img src="./Prototipo/Dentro.jpg" alt="Prototipo desde dentro" width="400">
+</p>
+
+### Vista del prototipo de frente.
+<p align="center">
+  <img src="./Prototipo/Frente.jpg" alt="Prototipo desde frente" width="400">
+</p>
 
 # Muckup de la aplicación
 
