@@ -14,7 +14,7 @@
 
 ## Índice
 
-- [Introducción](#introducción)
+- [Uso de sensores](#sensores)
 - [Bocetos de prototipos](#bocetos-de-prototipos)
 - [Prototipo propuesto](#prototipo-propuesto)
 - [Muckup de la aplicación](#muckup-de-la-aplicación)
@@ -30,8 +30,111 @@
 - [Diagramas de flujo](#diagramas-de-flujo)
 - [MQTT](#mqtt)
 
-# Introducción
+# Sensores
+### Sensor de Iluminación
+```
+// Se le asigna un pin analógico al sensor
+#define LDR_PIN A0
+// Inicializa la variable
+int luz;
 
+  void setup(){
+
+  }
+
+  void loop() {
+    // Se lee el valor analógico y se asigna a la variable luz
+    luz = analogRead(LDR_PIN);
+  }
+```
+### Presencia Humana
+```
+#define trigPin 9 // Pin del sensor TRIG
+#define echoPin 10 // Pin del sensor ECHO
+
+void setup(){
+  pinMode(trigPin, OUTPUT); // Configura el pin TRIG como salida
+  pinmode(echoPin, INPUT); // Configura el pin ECHO como entrada
+}
+
+void loop(){
+  digitalWrite(trigPin, LOW); // Envía un pulso bajo al pin TRIG
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH); // Envía un pulso alto al pin TRIG
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW); // Apaga el pulso
+
+  long duration = pulseIn(echoPin, HIGH); // Lee la duración del pulso en el pin ECHO
+  int distance = duration / 58.2; // Calcula la distancia en centímetros (debe ajustarse según tu sensor)
+
+  if (distance < 100) {
+    Serial.print("Persona detectada a una distancia de: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+  } else {
+    Serial.println("No se detecta ninguna persona.");
+  }
+
+  delay(1000); // Espera 1 segundo antes de volver a medir
+}
+```
+### Sensor de Temperatura
+```
+#include <DHT.h>
+
+#define DHTPIN 2      // El número del pin digital al que está conectado el sensor DHT11
+#define DHTTYPE DHT11  // Tipo del sensor (DHT11 o DHT22)
+int temperatura; // Variable que almacena la temperatura
+
+DHT dht(DHTPIN, DHTTYPE); // Inicializa el sensor DHT
+
+void setup() { 
+  dht.begin(); // Inicializa el sensor DHT
+}
+
+void loop(){
+  temperatura = dht.readTemperature(); // Lee la temperatura en grados Celsius
+}
+```
+### Sensor de Calidad de Aire
+```
+#include <MQ135.h>
+
+#define ANALOG_PIN A0 // Pin analógico al que está conectado el sensor MQ135
+
+MQ135 gasSensor = MQ135(ANALOG_PIN);
+
+void setup() {
+
+}
+
+void loop() {
+  float ppmCO2 = gasSensor.getPPM(); // Obtiene la concentración de CO2 en ppm
+}
+```
+### Motor DC (Ventilador)
+```
+#include <AFMotor.h>
+
+AF_DCMotor motor(1); // Define el motor DC en el puerto 1 del puente H
+
+void setup() {
+  motor.setSpeed(255); // Configura la velocidad máxima (0-255)
+}
+
+void loop() {
+  if(velocidad == 0){
+     motor.setSpeed(128); // Velocidad media (0-255)
+  motor.run(FORWARD); // Gira el motor en una dirección (sentido de las agujas del reloj)
+  }else if (velocidad == 1){
+    motor.setSpeed(255); // Velocidad máxima (0-255)
+  motor.run(FORWARD); // Gira el motor en la misma dirección
+  }else{
+      motor.run(RELEASE); // Detiene el motor
+  }
+}
+```
+### Servo / Stepper
 # Bocetos de prototipos
 
 <p align="center">
@@ -240,3 +343,8 @@ Un _publisher_ es un dispositivo o aplicación que publica mensajes en un tema. 
 ### Subscriber
 
 Un _subscriber_ es un dispositivo o aplicación que se suscribe a un tema para recibir los mensajes que se publican en él. Los _subscribers_ pueden recibir mensajes de cualquier _publisher_ que publique en el tema.
+
+### Topic
+
+Al filtro que el *MQTT* utiliza para la recepción de mensajes se llama *Topic*, este consiste en una cadena de texto UTF-8, y una longitud máxima de 65536 caracteres (aunque lo normal es que sea mucho menor). Se distingue entre mayúsculas y minúsculas.
+
