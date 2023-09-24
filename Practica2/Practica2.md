@@ -135,6 +135,36 @@ void loop() {
 }
 ```
 ### Servo / Stepper
+```
+#include <Servo.h>
+
+Servo miServo;  // Crear un objeto Servo
+
+int anguloInicial = 90;  // Ángulo inicial del servo (90 grados)
+int paso = 10;           // Tamaño del paso para mover el servo
+
+void setup() {
+  miServo.attach(9);  // Asignar el servo al pin 9
+}
+
+void loop() {
+  // Mover el servo hacia la derecha
+  for (int angulo = anguloInicial; angulo <= 180; angulo += paso) {
+    miServo.write(angulo);
+    delay(500);  // Puedes ajustar el tiempo de espera según tu preferencia
+  }
+  
+  delay(1000);  // Esperar un segundo
+  
+  // Mover el servo hacia la izquierda
+  for (int angulo = anguloInicial; angulo >= 0; angulo -= paso) {
+    miServo.write(angulo);
+    delay(500);
+  }
+  
+  delay(1000);
+}
+```
 # Bocetos de prototipos
 
 <p align="center">
