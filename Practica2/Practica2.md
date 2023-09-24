@@ -15,6 +15,8 @@
 ## Índice
 
 - [Uso de sensores](#sensores)
+- [Codigo de Arduino](#codigo-de-arduino)
+- [Base de Datos](#base-de-datos)
 - [Bocetos de prototipos](#bocetos-de-prototipos)
 - [Prototipo propuesto](#prototipo-propuesto)
 - [Muckup de la aplicación](#muckup-de-la-aplicación)
@@ -164,6 +166,163 @@ void loop() {
   
   delay(1000);
 }
+```
+# Codigo de Arduino
+Codigo de Arduino para el control de los sensores y actuadores. (En desarrollo)
+```
+#include <Servo.h>
+#include <DHT.h>
+
+// Definición de los pines
+#define DHTPIN 2      // Pin digital para el sensor DHT11
+#define DHTTYPE DHT11  // Tipo de sensor DHT (DHT11 o DHT22)
+#define ANALOG_PIN A0  // Pin analógico para el sensor analógico
+#define LDR_PIN A1    // Pin analógico para el sensor LDR
+#define FAN_PIN 3     // Pin para el ventilador
+#define SERVO_PIN 9   // Pin para el servomotor
+#define LED_PIN 13    // Pin para el LED
+#define TRIG_PIN 10   // Pin para el pin TRIG del sensor ultrasónico
+#define ECHO_PIN 11   // Pin para el pin ECHO del sensor ultrasónico
+
+// Inicialización de objetos
+DHT dht(DHTPIN, DHTTYPE); // Objeto para el sensor DHT
+Servo myServo; // Objeto para el servomotor
+
+// Variables
+int inPin = 3; // Pin para el botón
+int btn = 0; // Variable para almacenar el estado del botón
+unsigned long time_now = 0;
+int period = 1000; // Período de muestreo en milisegundos (1 segundo)
+
+void setup()
+{
+    Serial.begin(9600);
+    dht.begin();
+    pinMode(FAN_PIN, OUTPUT);   // Configurar el pin del ventilador como salida
+    pinMode(SERVO_PIN, OUTPUT); // Configurar el pin del servomotor como salida
+    pinMode(LED_PIN, OUTPUT);   // Configurar el pin del LED como salida
+    pinMode(inPin, INPUT);
+    pinMode(TRIG_PIN, OUTPUT);  // Configurar el pin TRIG como salida
+    pinMode(ECHO_PIN, INPUT);   // Configurar el pin ECHO como entrada
+
+    myServo.attach(SERVO_PIN); // Adjuntar el servo al pin SERVO_PIN
+    time_now = millis();
+}
+
+void loop()
+{
+    btn = digitalRead(inPin);
+
+    // Controla el estado del ventilador
+    if (btn == 2) {
+        digitalWrite(FAN_PIN, HIGH); // Enciende el ventilador
+    } else if (btn == 3) {
+        digitalWrite(FAN_PIN, LOW); // Apaga el ventilador
+    }
+
+    // Controla el estado del LED
+    if (btn == 1) {
+        digitalWrite(LED_PIN, HIGH); // Enciende el LED
+    } else if (btn == 0) {
+        digitalWrite(LED_PIN, LOW); // Apaga el LED
+    }
+
+    // Realiza la lectura de sensores cada 1000 milisegundos (1 segundo)
+    if (millis() >= time_now + period)
+    {
+        time_now += period;
+        float tempC = dht.readTemperature(); // Lee la temperatura
+        float humidity = dht.readHumidity(); // Lee la humedad
+        int ldrValue = analogRead(LDR_PIN);  // Lee el valor del sensor LDR
+        int analogValue = analogRead(ANALOG_PIN); // Lee el valor del sensor analógico
+
+        // Controla el servo basado en la distancia medida por el sensor ultrasónico
+        digitalWrite(TRIG_PIN, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TRIG_PIN, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(TRIG_PIN, LOW);
+        long duration = pulseIn(ECHO_PIN, HIGH);
+        float distance_cm = duration * 0.034 / 2;
+
+        // Controla el servo basado en la distancia
+        if (distance_cm < 10) {
+            myServo.write(90); // Gira el servo a 90 grados
+        } else {
+            myServo.write(0); // Gira el servo a 0 grados
+        }
+
+        // Imprime los valores
+        Serial.print("Temp: ");
+        Serial.print(tempC);
+        Serial.print("°C, Humidity: ");
+        Serial.print(humidity);
+        Serial.print("%, LDR: ");
+        Serial.print(ldrValue);
+        Serial.print(", Analog: ");
+        Serial.print(analogValue);
+        Serial.print(", Distance: ");
+        Serial.print(distance_cm);
+        Serial.println(" cm");
+    }
+}
+```
+La parte del codigo que evita que el flujo entre en estado de absorción es este, donde se utiliza millis(), para que el flujo no se detenga y se pueda seguir ejecutando el codigo.
+```
+milisegundos (1 segundo)
+    if (millis() >= time_now + period)
+    {
+        time_now += period;
+        float tempC = dht.readTemperature(); // Lee la temperatura
+        float humidity = dht.readHumidity(); // Lee la humedad
+        int ldrValue = analogRead(LDR_PIN);  // Lee el valor del sensor LDR
+        int analogValue = analogRead(ANALOG_PIN); // Lee el valor del sensor analógico
+
+        // Controla el servo basado en la distancia medida por el sensor ultrasónico
+        digitalWrite(TRIG_PIN, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TRIG_PIN, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(TRIG_PIN, LOW);
+        long duration = pulseIn(ECHO_PIN, HIGH);
+        float distance_cm = duration * 0.034 / 2;
+
+        // Controla el servo basado en la distancia
+        if (distance_cm < 10) {
+            myServo.write(90); // Gira el servo a 90 grados
+        } else {
+            myServo.write(0); // Gira el servo a 0 grados
+        }
+
+        // Imprime los valores
+        Serial.print("Temp: ");
+        Serial.print(tempC);
+        Serial.print("°C, Humidity: ");
+        Serial.print(humidity);
+        Serial.print("%, LDR: ");
+        Serial.print(ldrValue);
+        Serial.print(", Analog: ");
+        Serial.print(analogValue);
+        Serial.print(", Distance: ");
+        Serial.print(distance_cm);
+        Serial.println(" cm");
+    }
+```
+# Base de Datos
+Las razones principales por las que utilizamos una base de datos en sql son las siguientes:
+- SQL es un lenguaje de programación específico diseñado para gestionar bases de datos relacionales. Su sintaxis es relativamente sencilla y se utiliza para realizar operaciones como insertar, actualizar, recuperar y eliminar datos de manera fácil de entender.
+- SQL permite realizar consultas complejas para recuperar datos específicos de manera eficiente. Las consultas se pueden personalizar para adaptarse a tus necesidades exactas utilizando cláusulas como SELECT, WHERE, JOIN, GROUP BY, y ORDER BY.
+- SQL es escalable, lo que significa que puedes gestionar grandes volúmenes de datos de manera efectiva y optimizar el rendimiento utilizando índices y otras técnicas.
+
+Código de implementación:
+```
+CREATE TABLE IF NOT EXISTS mediciones(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  temperatura DECIMAL(5,2) NOT NULL,
+  luz INTEGER NOT NULL,
+  calidad_aire INTEGER NOT NULL,
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 # Bocetos de prototipos
 
