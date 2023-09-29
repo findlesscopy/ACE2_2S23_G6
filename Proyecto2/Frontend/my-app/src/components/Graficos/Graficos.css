@@ -1,0 +1,58 @@
+/* Estilos para el navbar */
+/* Estilos para el fondo de la página */
+body {
+    background-image: url("https://i.pinimg.com/564x/e8/c1/25/e8c125a927dc4ca81b828969139dc252.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: rgba(255, 255, 255, 0.5); /* Ajusta la opacidad aquí */
+}
+
+.navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #333;
+    padding: 20px 0;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* Estilos para el contenedor de información */
+.info-habitacion {
+    text-align: center; /* Centrar el contenido horizontalmente */
+    padding: 80px;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+    position: absolute;
+    top: 120px; /* Distancia desde la parte superior */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translateX(-50%); /* Alinear al centro horizontal */
+    border-radius: 5px;
+}
+
+.navbar li {
+    margin: 10px 0;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center; /* Centrar verticalmente el texto e ícono */
+    padding: 10px;
+}
+
+.navbar a img {
+    width: 30px; /* Ajusta el tamaño de los íconos según tus necesidades */
+    height: 30px;
+    margin-right: 10px; /* Espacio entre el ícono y el texto */
+}
+
+/* Estilos al pasar el mouse sobre los enlaces */
+.navbar a:hover {
+    background-color: #555;
+}
