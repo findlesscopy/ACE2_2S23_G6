@@ -60,5 +60,11 @@ void loop() {
     time_now += period;
     Serial.print("Temperatura: ");
     Serial.println(tempC);
+    Serial.print("CO2: ");
+    Serial.println(ppm);
+    Serial.print("Luz: ");
+    Serial.println(ldrValue);
+    Serial.print("Distancia: ");
+    Serial.println(distance);
   }
 }
