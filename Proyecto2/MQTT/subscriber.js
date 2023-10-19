@@ -1,7 +1,7 @@
 const mqtt = require("mqtt");
 const mysql = require("mysql");
 let get = true;
-const Topic = "Data:";
+const Topic = "Temperatura:";
 
 const sub = mqtt.connect("mqtt://localhost:9000");
 
