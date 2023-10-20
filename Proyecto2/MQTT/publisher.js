@@ -20,7 +20,7 @@ pub.on("connect", () => {
 });
 
 port.on("open", () => {
-  console.log("Conexión serial abierta en COM2");
+  console.log("Conexión serial abierta en COM8");
 });
 
 port.on("error", (err) => {
