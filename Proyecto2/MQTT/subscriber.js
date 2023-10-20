@@ -1,11 +1,12 @@
 const mqtt = require("mqtt");
 
-const Topic = "Temperatura:";
-
 const sub = mqtt.connect("mqtt://localhost:9000");
 
 sub.on("connect", () => {
-    sub.subscribe(Topic);
+    sub.subscribe("Temperatura:");
+    sub.subscribe("CO2:");
+    sub.subscribe("Luz:");
+    sub.subscribe("Distancia:");
 });
 
 sub.on("message", (topic, message) => {
