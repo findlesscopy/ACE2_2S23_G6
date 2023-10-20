@@ -26,23 +26,21 @@ sub.on("message", (topic, message) => {
     console.log("Topic: ", topic, " msg: ", message.toString());
 
     // Insertar los datos en la base de datos SQLite
-    
+    const insertQuery = "INSERT INTO mediciones (temperatura, luz, calidad_aire, distancia) VALUES (?, ?, ?, ?)";
 
-    const insertQuery = "INSERT INTO mediciones (temperatura, luz, humedad, calidad_aire) VALUES (?, ?, ?, ?)";
-
-    let temperatura, luz, humedad, calidad_aire;
+    let temperatura, luz, calidad_aire, distancia;
     
     if (topic === "Temperatura:") {
         temperatura = message.toString();
     } else if (topic === "Luz:") {
         luz = message.toString();
-    } else if (topic === "Humedad:") {
-        humedad = message.toString();
     } else if (topic === "CalidadAire:") {
         calidad_aire = message.toString();
+    } else if (topic === "Distancia:") {
+        distancia = message.toString();
     }
 
-    db.run(insertQuery, [temperatura, luz, humedad, calidad_aire], function (err) {
+    db.run(insertQuery, [temperatura, luz, calidad_aire, distancia], function (err) {
         if (err) {
             console.error("Error al insertar datos en SQLite:", err);
         } else {
