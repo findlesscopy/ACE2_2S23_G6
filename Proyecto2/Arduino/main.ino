@@ -38,6 +38,30 @@ void setup() {
 
 void loop() {
 
+  if (Serial.available() > 0) {
+    char receivedChar = Serial.read();
+
+    // Realizar acciones basadas en el valor recibido
+    if (receivedChar == '0') {
+      // apagar luces
+      digitalWrite(LED_PIN, LOW);
+    } else if (receivedChar == '1') {
+      // encender luces
+      digitalWrite(LED_PIN, HIGH);
+    } else if (receivedChar == '2') {
+      // encender ventilador
+      digitalWrite(FAN_PIN, HIGH);
+    } else if (receivedChar == '3') {
+      // apagar ventilador
+      digitalWrite(FAN_PIN, LOW);
+    } else if (receivedChar == '4') {
+      // abrir puerta
+      myServo.write(0);
+    } else if (receivedChar == '5') {
+      // cerrar puerta
+      myServo.write(90);
+    }
+  }
   /// Leer temperatura del sensor DHT11
   float tempC = dht.readTemperature();
 
@@ -60,8 +84,10 @@ void loop() {
     time_now += period;
     Serial.print("Temperatura: ");
     Serial.println(tempC);
+
     Serial.print("CO2: ");
     Serial.println(ppm);
+    sistemaVentilacion();
 
     Serial.print("Distancia: ");
     Serial.println(distance);
@@ -70,6 +96,31 @@ void loop() {
     Serial.print("Luz: ");
     Serial.println(ldrValue);
     
+  }
+}
+
+void sistemaVentilacion(){
+  if(co2 > 500){
+    // iniciar un temporizador de 30 segundos
+    delay(10000);
+
+    // enviar notificacion de calidad del aire mala a app
+    Serial.print("NotificacionAire: ");
+    Serial.println("2");
+    // iniciar un temporizador de 30 segundos
+    delay(10000);
+
+    // encender ventilador por 30 segundos
+    digitalWrite(FAN_PIN, HIGH);
+    delay(10000);
+
+    // apagar ventilador
+    digitalWrite(FAN_PIN, LOW);
+
+    // enviar notificacion de calidad del aire buena a app
+    Serial.print("NotificacionLuz: ");
+    Serial.println("3");
+
   }
 }
 
