@@ -4,6 +4,7 @@ const port = 5000;
 const mqtt = require("mqtt");
 
 const pub = mqtt.connect("mqtt://localhost:9000"); // Reemplaza por la dirección de tu broker MQTT
+const db_path = "data.db";
 
 pub.on("connect", () => {
   console.log("Conectado al servidor MQTT");
@@ -64,6 +65,32 @@ app.post("/publish/luz", (req, res) => {
     }
   });
 });
+
+app.get("/obtener_datos", (req, res) => {
+  // Consultar datos desde la base de datos
+  const conn = new sqlite3.Database(db_path);
+
+  conn.all("SELECT temperatura, luz, calidad_aire, distancia, fecha FROM mediciones", (err, rows) => {
+      if (err) {
+          res.status(500).json({ error: "Error al consultar la base de datos" });
+          return;
+      }
+
+      // Formatear los datos para la respuesta JSON
+      const datos = rows.map(row => ({
+          temperatura: row.temperatura,
+          luz: row.luz,
+          calidad_aire: row.calidad_aire,
+          distancia: row.distancia,
+          fecha: row.fecha
+      }));
+
+      res.json({ datos });
+  });
+
+  conn.close();
+});
+
 
 app.listen(port, () => {
   console.log(`Servidor Express escuchando en el puerto ${port}`);
