@@ -6,7 +6,6 @@ const sqlite3 = require("sqlite3").verbose();
 
 const db = new sqlite3.Database("data.db");
 
-const sqlite3 = require("sqlite3").verbose();
 
 const pub = mqtt.connect("mqtt://localhost:9000"); // Reemplaza por la dirección de tu broker MQTT
 const db_path = "data.db";

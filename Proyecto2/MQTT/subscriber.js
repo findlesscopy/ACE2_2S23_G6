@@ -12,6 +12,7 @@ sub.on("connect", () => {
     sub.subscribe("CO2:");
     sub.subscribe("Luz:");
     sub.subscribe("Distancia:");
+    sub.subscribe("NotificacionLuz:");
 });
 
 const insertQuery_create = "CREATE TABLE IF NOT EXISTS mediciones (id INTEGER PRIMARY KEY AUTOINCREMENT, temperatura DECIMAL(5, 2) NOT NULL, luz INTEGER NOT NULL, calidad_aire INTEGER NOT NULL, distancia DECIMAL(5, 2) NOT NULL, fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
@@ -42,6 +43,15 @@ sub.on("message", (topic, message) => {
         accumulatedData.calidad_aire = message.toString();
     } else if (topic === "Distancia:") {
         accumulatedData.distancia = message.toString();
+    } else if (topic === "NotificacionLuz:") {
+        console.log("Notificacion de luz recibida");
+        notificacion_luz = message.toString();
+        console.log(notificacion_luz);
+        if(notificacion_luz == "0"){
+            console.log("Se envia la notificación de que no hay nadie en la habitación");
+        }else if(notificacion_luz == "1"){
+            console.log("Se envia la notificación de que se ha apagado la luz");
+        }
     }
 
     // Verificar si tenemos todos los datos para realizar la inserción
@@ -63,14 +73,7 @@ sub.on("message", (topic, message) => {
         }
     }
 
-    if (topic === "NotificacionLuz:") {
-        notificacion_luz = message.toString();
-    }
 
-    if(notificacion_luz == "0"){
-        console.log("Se envia la notificación de que no hay nadie en la habitación");
-    }else if(notificacion_luz == "1"){
-        console.log("Se envia la notificación de que se ha apagado la luz");
-    }
+   
 
 });
