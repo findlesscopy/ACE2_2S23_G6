@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const mqtt = require("mqtt");
+const sqlite3 = require("sqlite3").verbose();
+
+const db = new sqlite3.Database("data.db");
 
 const sqlite3 = require("sqlite3").verbose();
 
