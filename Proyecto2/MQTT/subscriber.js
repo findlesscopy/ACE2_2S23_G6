@@ -36,7 +36,7 @@ sub.on("message", (topic, message) => {
         accumulatedData.temperatura = message.toString();
     } else if (topic === "Luz:") {
         accumulatedData.luz = message.toString();
-    } else if (topic === "CalidadAire:") {
+    } else if (topic === "CO2:") {
         accumulatedData.calidad_aire = message.toString();
     } else if (topic === "Distancia:") {
         accumulatedData.distancia = message.toString();
