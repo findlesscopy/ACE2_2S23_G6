@@ -22,29 +22,42 @@ db.run(insertQuery_create, function (err) {
     }
 });
 
+const accumulatedData = {
+    temperatura: null,
+    luz: null,
+    calidad_aire: null,
+    distancia: null
+};
+
 sub.on("message", (topic, message) => {
     console.log("Topic: ", topic, " msg: ", message.toString());
 
-    // Insertar los datos en la base de datos SQLite
-    const insertQuery = "INSERT INTO mediciones (temperatura, luz, calidad_aire, distancia) VALUES (?, ?, ?, ?)";
-
-    let temperatura, luz, calidad_aire, distancia;
-    
     if (topic === "Temperatura:") {
-        temperatura = message.toString();
+        accumulatedData.temperatura = message.toString();
     } else if (topic === "Luz:") {
-        luz = message.toString();
+        accumulatedData.luz = message.toString();
     } else if (topic === "CalidadAire:") {
-        calidad_aire = message.toString();
+        accumulatedData.calidad_aire = message.toString();
     } else if (topic === "Distancia:") {
-        distancia = message.toString();
+        accumulatedData.distancia = message.toString();
     }
 
-    db.run(insertQuery, [temperatura, luz, calidad_aire, distancia], function (err) {
-        if (err) {
-            console.error("Error al insertar datos en SQLite:", err);
-        } else {
-            console.log("Datos guardados en SQLite.");
+    // Verificar si tenemos todos los datos para realizar la inserción
+    if (accumulatedData.temperatura !== null && accumulatedData.luz !== null && accumulatedData.calidad_aire !== null && accumulatedData.distancia !== null) {
+        // Insertar los datos en la base de datos SQLite
+        const insertQuery = "INSERT INTO mediciones (temperatura, luz, calidad_aire, distancia) VALUES (?, ?, ?, ?)";
+
+        db.run(insertQuery, [accumulatedData.temperatura, accumulatedData.luz, accumulatedData.calidad_aire, accumulatedData.distancia], function (err) {
+            if (err) {
+                console.error("Error al insertar datos en SQLite:", err);
+            } else {
+                console.log("Datos guardados en SQLite.");
+            }
+        });
+
+        // Reiniciar los datos acumulados
+        for (const key in accumulatedData) {
+            accumulatedData[key] = null;
         }
-    });
+    }
 });
