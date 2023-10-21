@@ -62,9 +62,36 @@ void loop() {
     Serial.println(tempC);
     Serial.print("CO2: ");
     Serial.println(ppm);
-    Serial.print("Luz: ");
-    Serial.println(ldrValue);
+
     Serial.print("Distancia: ");
     Serial.println(distance);
+    sistemaIluminacion();
+
+    Serial.print("Luz: ");
+    Serial.println(ldrValue);
+    
+  }
+}
+
+void sistemaIluminacion(){
+  if(distance > 20){
+    // inicia un temporizador de 30 segundos
+    delay(10000);
+
+    // enviar notificacion de que no hay nadie a la app
+    Serial.print("NotificacionLuz: ");
+    Serial.println("0");
+
+    delay(500);
+    // inicia un temporizador de 30 segundos
+    delay(10000);
+
+    // apagar luces
+    digitalWrite(LED_PIN, LOW);
+    // enviar notificacion de que se ha apagado la luz en la habitación
+    Serial.print("NotificacionLuz: ");
+    Serial.println("1");
+
+    delay(500);
   }
 }

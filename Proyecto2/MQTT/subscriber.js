@@ -5,6 +5,8 @@ const db = new sqlite3.Database("data.db");
 
 const sub = mqtt.connect("mqtt://localhost:9000");
 
+let notificacion_luz = null;
+
 sub.on("connect", () => {
     sub.subscribe("Temperatura:");
     sub.subscribe("CO2:");
@@ -60,4 +62,15 @@ sub.on("message", (topic, message) => {
             accumulatedData[key] = null;
         }
     }
+
+    if (topic === "NotificacionLuz:") {
+        notificacion_luz = message.toString();
+    }
+
+    if(notificacion_luz == "0"){
+        console.log("Se envia la notificación de que no hay nadie en la habitación");
+    }else if(notificacion_luz == "1"){
+        console.log("Se envia la notificación de que se ha apagado la luz");
+    }
+
 });
