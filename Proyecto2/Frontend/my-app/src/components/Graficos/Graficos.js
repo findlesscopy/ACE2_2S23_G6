@@ -1,4 +1,6 @@
+// Grafico.js
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './Graficos.css';
 import Temperatura from '../Temperatura/Temperatura';
 import PresenciaHumana from '../PrecenciaHumana/PrecenciaHumana';
@@ -11,18 +13,21 @@ class Grafico extends React.Component {
     this.mostrarInfo('temperatura', 'Temperatura', 'https://img.icons8.com/clouds/100/temperature.png');
   }
 
-  mostrarInfo(id, nombreHabitacion, iconoURL) {
+  mostrarInfo(id, nombreHabitacion, iconoURL, contenidoAdicional) {
     // Obtener el elemento contenedor
     var infoHabitacion = document.getElementById('info-habitacion');
 
     // Crear el contenido HTML para mostrar
-    var contenido = `
-        <h2>${nombreHabitacion}</h2>
-        <img src="${iconoURL}" alt="${nombreHabitacion} Icono"/>
-    `;
+    var contenido = (
+      <div>
+        <h2>{nombreHabitacion}</h2>
+        <img src={iconoURL} alt={`${nombreHabitacion} Icono`} />
+        {contenidoAdicional}
+      </div>
+    );
 
-    // Colocar el contenido en el contenedor
-    infoHabitacion.innerHTML = contenido;
+    // Renderizar el contenido en el contenedor
+    ReactDOM.render(contenido, infoHabitacion);
   }
 
   render() {
