@@ -1,11 +1,12 @@
 const mqtt = require("mqtt");
-const SerialPort = require("serialport");
+const { SerialPort, ReadlineParser } = require("serialport");
 
 const sub = mqtt.connect("mqtt://localhost:9000");
 
-const arduino = new SerialPort("COM8", {
-  baudRate: 9600,
-});
+const port = new SerialPort({
+    path: "COM8",
+    baudRate: 9600,
+  });
 
 sub.on("connect", () => {
     sub.subscribe("NotificacionLuz:");
@@ -17,8 +18,8 @@ sub.on("message", (topic, message) => {
     console.log("topic: ", topic, "  msj: ", message.toString());
 
     // Envía los datos al Arduino a través del puerto serial
-    if (arduinoSerialPort.isOpen) {
-        arduinoSerialPort.write(message.toString(), (err) => {
+    if (port.isOpen) {
+        port.write(message.toString(), (err) => {
             if (err) {
                 console.error("Error al escribir en el puerto serial:", err);
             } else {
@@ -28,10 +29,10 @@ sub.on("message", (topic, message) => {
     }
 });
 
-arduinoSerialPort.on("open", () => {
+port.on("open", () => {
     console.log("Conexión establecida con el puerto serial del Arduino.");
 });
 
-arduinoSerialPort.on("error", (err) => {
+port.on("error", (err) => {
     console.error("Error en el puerto serial del Arduino:", err);
 });
