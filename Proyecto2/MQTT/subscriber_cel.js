@@ -9,7 +9,8 @@ const arduino = new SerialPort("COM8", {
 
 sub.on("connect", () => {
     sub.subscribe("NotificacionLuz:");
-    sub.subscribe("NotificacionAire");
+    sub.subscribe("NotificacionAire:");
+    sub.subscribe("NotificacionSeguridad:");
 });
 
 sub.on("message", (topic, message) => {

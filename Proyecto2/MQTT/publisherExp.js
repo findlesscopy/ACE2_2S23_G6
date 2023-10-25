@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.post("/publish/ventilador", (req, res) => {
   console.log("Publicando solicitud de encender/apagar ventilador:", req.body);
 
-  const topic = "Ventilador:"; // Tema MQTT para la temperatura
+  const topic = "NotificacionAire:"; // Tema MQTT para la temperatura
   const message = JSON.stringify(req.body); // Publica los datos en formato JSON
 
   pub.publish(topic, message, (error) => {
@@ -38,7 +38,7 @@ app.post("/publish/ventilador", (req, res) => {
 app.post("/publish/seguridad", (req, res) => {
   console.log("Publicando solicitud de abrir/cerrar puerta:", req.body);
 
-  const topic = "Puerta:"; // Tema MQTT para el CO2
+  const topic = "NotificacionSeguridad:"; // Tema MQTT para el CO2
   const message = JSON.stringify(req.body);
 
   pub.publish(topic, message, (error) => {
@@ -55,7 +55,7 @@ app.post("/publish/seguridad", (req, res) => {
 app.post("/publish/lampara", (req, res) => {
   console.log("Publicando solicitud de encender/apagar lampara:", req.body);
 
-  const topic = "Lampara:"; // Tema MQTT para la luz
+  const topic = "NotificacionLuz:"; // Tema MQTT para la luz
   const message = JSON.stringify(req.body);
 
   pub.publish(topic, message, (error) => {
