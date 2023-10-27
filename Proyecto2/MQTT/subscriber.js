@@ -8,12 +8,12 @@ const sub = mqtt.connect("mqtt://localhost:9000");
 let notificacion_luz = null;
 
 sub.on("connect", () => {
-    sub.subscribe("Temperatura:");
-    sub.subscribe("CO2:");
-    sub.subscribe("Luz:");
-    sub.subscribe("Distancia:");
-    sub.subscribe("NotificacionLuz:");
-    sub.subscribe("NotificacionAire:");
+    sub.subscribe("ARQUI2_G6_temperatura:");
+    sub.subscribe("ARQUI2_G6_co2:");
+    sub.subscribe("ARQUI2_G6_luz:");
+    sub.subscribe("ARQUI2_G6_distancia:");
+    sub.subscribe("ARQUI2_G6_notificacion_luz:");
+    sub.subscribe("ARQUI2_G6_notificacion_aire:");
 });
 
 const insertQuery_create = "CREATE TABLE IF NOT EXISTS mediciones (id INTEGER PRIMARY KEY AUTOINCREMENT, temperatura DECIMAL(5, 2) NOT NULL, luz INTEGER NOT NULL, calidad_aire INTEGER NOT NULL, distancia DECIMAL(5, 2) NOT NULL, fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
@@ -36,15 +36,15 @@ const accumulatedData = {
 sub.on("message", (topic, message) => {
     console.log("Topic: ", topic, " msg: ", message.toString());
 
-    if (topic === "Temperatura:") {
+    if (topic === "ARQUI2_G6_temperatura:") {
         accumulatedData.temperatura = message.toString();
-    } else if (topic === "Luz:") {
+    } else if (topic === "ARQUI2_G6_luz:") {
         accumulatedData.luz = message.toString();
-    } else if (topic === "CO2:") {
+    } else if (topic === "ARQUI2_G6_co2:") {
         accumulatedData.calidad_aire = message.toString();
-    } else if (topic === "Distancia:") {
+    } else if (topic === "ARQUI2_G6_distancia:") {
         accumulatedData.distancia = message.toString();
-    } else if (topic === "NotificacionLuz:") {
+    } else if (topic === "ARQUI2_G6_notificacion_luz:") {
         console.log("Notificacion de luz recibida");
         notificacion_luz = message.toString();
         if(notificacion_luz == "0"){
@@ -52,7 +52,7 @@ sub.on("message", (topic, message) => {
         }else if(notificacion_luz == "1"){
             console.log("1. Se envia la notificación de que se ha apagado la luz");
         }
-    } else if (topic === "NotificacionAire:") {
+    } else if (topic === "ARQUI2_G6_notificacion_aire:") {
         console.log("Notificacion de aire recibida");
         notificacion_aire = message.toString();
         if(notificacion_aire == "0"){

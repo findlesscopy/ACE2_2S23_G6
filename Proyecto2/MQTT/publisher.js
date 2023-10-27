@@ -24,9 +24,9 @@ pub.on("connect", () => {
 const sub = mqtt.connect("mqtt://localhost:9000");
 
 sub.on("connect", () => {
-  sub.subscribe("NotificacionLuz:");
-  sub.subscribe("NotificacionAire:");
-  sub.subscribe("NotificacionSeguridad:");
+  sub.subscribe("ARQUI2_G6_notificacion_ventilador:");
+  sub.subscribe("ARQUI2_G6_notificacion_puerta:");
+  sub.subscribe("ARQUI2_G6_notificacion_lampara:");
 });
 
 sub.on("message", (topic, message) => {

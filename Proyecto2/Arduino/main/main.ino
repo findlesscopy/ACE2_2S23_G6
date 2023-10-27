@@ -18,7 +18,9 @@ Servo myServo;
 
 // Variables para el sensor ultrasónico
 long duration;
-int distance;
+
+int distance, ldrValue;
+float tempC, ppm;
 
 char valor_dato = '0';  // Inicializar valor_dato como '0'
 
@@ -63,10 +65,10 @@ void loop() {
     }
   }
   /// Leer temperatura del sensor DHT11
-  float tempC = dht.readTemperature();
+  tempC = dht.readTemperature();
 
   // Leer concentración de CO2 del sensor MQ-135
-  float ppm = gasSensor.getPPM();
+  ppm = gasSensor.getPPM();
 
   // Realizar una medición de proximidad con el sensor ultrasónico
   digitalWrite(TRIG_PIN, LOW);
@@ -78,34 +80,34 @@ void loop() {
   distance = duration * 0.034 / 2; // Calcular la distancia en centímetros
 
   // Leer valor del sensor LDR
-  int ldrValue = analogRead(LDR_PIN);
+  ldrValue = analogRead(LDR_PIN);
   
   if (millis() >= time_now + period){
     time_now += period;
-    Serial.print("Temperatura: ");
+    Serial.print("ARQUI2_G6_temperatura: ");
     Serial.println(tempC);
 
-    Serial.print("CO2: ");
+    Serial.print("ARQUI2_G6_co2: ");
     Serial.println(ppm);
     sistemaVentilacion();
 
-    Serial.print("Distancia: ");
+    Serial.print("ARQUI2_G6_distancia: ");
     Serial.println(distance);
     sistemaIluminacion();
 
-    Serial.print("Luz: ");
+    Serial.print("ARQUI2_G6_luz: ");
     Serial.println(ldrValue);
     
   }
 }
 
 void sistemaVentilacion(){
-  if(co2 > 500){
+  if(ppm > 500){
     // iniciar un temporizador de 30 segundos
     delay(10000);
 
     // enviar notificacion de calidad del aire mala a app
-    Serial.print("NotificacionAire: ");
+    Serial.print("ARQUI2_G6_notificacion_aire: ");
     Serial.println("2");
     // iniciar un temporizador de 30 segundos
     delay(10000);
@@ -118,7 +120,7 @@ void sistemaVentilacion(){
     digitalWrite(FAN_PIN, LOW);
 
     // enviar notificacion de calidad del aire buena a app
-    Serial.print("NotificacionLuz: ");
+    Serial.print("ARQUI2_G6_notificacion_aire: ");
     Serial.println("3");
 
   }
@@ -130,7 +132,7 @@ void sistemaIluminacion(){
     delay(10000);
 
     // enviar notificacion de que no hay nadie a la app
-    Serial.print("NotificacionLuz: ");
+    Serial.print("ARQUI2_G6_notificacion_luz: ");
     Serial.println("0");
 
     delay(500);
@@ -140,7 +142,7 @@ void sistemaIluminacion(){
     // apagar luces
     digitalWrite(LED_PIN, LOW);
     // enviar notificacion de que se ha apagado la luz en la habitación
-    Serial.print("NotificacionLuz: ");
+    Serial.print("ARQUI2_G6_notificacion_luz: ");
     Serial.println("1");
 
     delay(500);
